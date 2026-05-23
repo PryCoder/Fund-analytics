@@ -1,8 +1,9 @@
+// src/services/api.js
 import axios from 'axios'
-import { API_BASE_URL } from '../config'
+import { API_BASE_URL, MFAPI_BASE_URL } from '../config'
 
-// Create axios instance with default config
-const api = axios.create({
+// Backend API instance (for watchlist)
+const backendApi = axios.create({
   baseURL: API_BASE_URL,
   timeout: 15000,
   headers: {
@@ -11,10 +12,19 @@ const api = axios.create({
   },
 })
 
+// MFAPI instance (for fund data - direct calls, no backend proxy needed)
+const mfApi = axios.create({
+  baseURL: MFAPI_BASE_URL,
+  timeout: 15000,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+})
+
 // Request interceptor for logging
-api.interceptors.request.use(
+backendApi.interceptors.request.use(
   (config) => {
-    console.log(`📤 ${config.method.toUpperCase()} ${config.url}`)
+    console.log(`📤 ${config.method.toUpperCase()} ${config.baseURL}${config.url}`)
     return config
   },
   (error) => {
@@ -24,17 +34,15 @@ api.interceptors.request.use(
 )
 
 // Response interceptor for error handling
-api.interceptors.response.use(
+backendApi.interceptors.response.use(
   (response) => {
     console.log(`📥 ${response.status} ${response.config.url}`)
     return response
   },
   (error) => {
     if (error.response) {
-      // Server responded with error status
       console.error(`❌ API Error ${error.response.status}:`, error.response.data)
 
-      // Handle specific status codes
       switch (error.response.status) {
         case 400:
           error.message = 'Invalid request. Please check your input.'
@@ -61,11 +69,9 @@ api.interceptors.response.use(
           error.message = error.response.data.error || 'An error occurred.'
       }
     } else if (error.request) {
-      // Request made but no response
       console.error('Network error:', error.request)
       error.message = 'Network error. Please check your connection.'
     } else {
-      // Something else happened
       console.error('Error:', error.message)
     }
 
@@ -73,17 +79,17 @@ api.interceptors.response.use(
   },
 )
 
-// Watchlist API endpoints
+// Watchlist API (uses your Render backend)
 export const watchlistAPI = {
-  getAll: () => api.get('/watchlist'),
-  add: (schemeCode, schemeName) => api.post('/watchlist', { schemeCode, schemeName }),
-  remove: (schemeCode) => api.delete(`/watchlist/${schemeCode}`),
+  getAll: () => backendApi.get('/watchlist'),
+  add: (schemeCode, schemeName) => backendApi.post('/watchlist', { schemeCode, schemeName }),
+  remove: (schemeCode) => backendApi.delete(`/watchlist/${schemeCode}`),
 }
 
-// Funds API endpoints
+// Funds API (uses MFAPI directly - no backend needed)
 export const fundsAPI = {
-  search: (query) => api.get('/funds/search', { params: { q: query } }),
-  getDetails: (schemeCode) => api.get(`/funds/${schemeCode}`),
+  search: (query) => mfApi.get('/search', { params: { q: query } }),
+  getDetails: (schemeCode) => mfApi.get(`/${schemeCode}`),
 }
 
-export default api
+export default backendApi

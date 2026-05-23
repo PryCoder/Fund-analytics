@@ -28,6 +28,7 @@ const allowedOrigins = [
   'http://localhost:5173',
   'http://localhost:5174',
   'http://localhost:5000',
+  'https://fund-analytics-7dhl.vercel.app',
   'http://127.0.0.1:5173',
   'http://127.0.0.1:3000',
   process.env.FRONTEND_URL,
