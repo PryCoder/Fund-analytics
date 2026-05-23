@@ -1,6 +1,4 @@
-// src/config.js
 
-// Use different URLs for development and production
 const getApiBaseUrl = () => {
   // Production - use your Render backend
   if (process.env.NODE_ENV === 'production') {
@@ -13,5 +11,3 @@ const getApiBaseUrl = () => {
 
 export const API_BASE_URL = getApiBaseUrl();
 
-// MFAPI direct URLs (no proxy needed)
-export const MFAPI_BASE_URL = 'https://api.mfapi.in/mf';

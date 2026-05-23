@@ -1,9 +1,9 @@
 // src/services/api.js
 import axios from 'axios'
-import { API_BASE_URL, MFAPI_BASE_URL } from '../config'
+import { API_BASE_URL } from '../config'
 
-// Backend API instance (for watchlist)
-const backendApi = axios.create({
+// Single API instance for all backend calls (both watchlist AND funds)
+const api = axios.create({
   baseURL: API_BASE_URL,
   timeout: 15000,
   headers: {
@@ -12,17 +12,8 @@ const backendApi = axios.create({
   },
 })
 
-// MFAPI instance (for fund data - direct calls, no backend proxy needed)
-const mfApi = axios.create({
-  baseURL: MFAPI_BASE_URL,
-  timeout: 15000,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-})
-
 // Request interceptor for logging
-backendApi.interceptors.request.use(
+api.interceptors.request.use(
   (config) => {
     console.log(`📤 ${config.method.toUpperCase()} ${config.baseURL}${config.url}`)
     return config
@@ -34,7 +25,7 @@ backendApi.interceptors.request.use(
 )
 
 // Response interceptor for error handling
-backendApi.interceptors.response.use(
+api.interceptors.response.use(
   (response) => {
     console.log(`📥 ${response.status} ${response.config.url}`)
     return response
@@ -45,7 +36,7 @@ backendApi.interceptors.response.use(
 
       switch (error.response.status) {
         case 400:
-          error.message = 'Invalid request. Please check your input.'
+          error.message = error.response.data.error || 'Invalid request. Please check your input.'
           break
         case 401:
           error.message = 'Unauthorized. Please log in.'
@@ -54,7 +45,7 @@ backendApi.interceptors.response.use(
           error.message = 'Access forbidden.'
           break
         case 404:
-          error.message = 'Requested data not found.'
+          error.message = error.response.data.error || 'Requested data not found.'
           break
         case 409:
           error.message = error.response.data.error || 'Duplicate entry.'
@@ -79,17 +70,20 @@ backendApi.interceptors.response.use(
   },
 )
 
-// Watchlist API (uses your Render backend)
+// Watchlist API (uses your backend)
 export const watchlistAPI = {
-  getAll: () => backendApi.get('/watchlist'),
-  add: (schemeCode, schemeName) => backendApi.post('/watchlist', { schemeCode, schemeName }),
-  remove: (schemeCode) => backendApi.delete(`/watchlist/${schemeCode}`),
+  getAll: () => api.get('/watchlist'),
+  add: (schemeCode, schemeName) => api.post('/watchlist', { schemeCode, schemeName }),
+  remove: (schemeCode) => api.delete(`/watchlist/${schemeCode}`),
 }
 
-// Funds API (uses MFAPI directly - no backend needed)
+// Funds API - 
 export const fundsAPI = {
-  search: (query) => mfApi.get('/search', { params: { q: query } }),
-  getDetails: (schemeCode) => mfApi.get(`/${schemeCode}`),
+  // Calls your backend: GET /api/funds/search?q=query
+  search: (query) => api.get('/funds/search', { params: { q: query } }),
+  
+  // Calls your backend: GET /api/funds/:schemeCode
+  getDetails: (schemeCode) => api.get(`/funds/${schemeCode}`),
 }
 
-export default backendApi
+export default api
