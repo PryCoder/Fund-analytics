@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react'
 import {
   Alert,
   AlertDescription,
@@ -7,14 +7,9 @@ import {
   Box,
   Button,
   HStack,
-} from "@chakra-ui/react";
+} from '@chakra-ui/react'
 
-const ErrorAlert = ({
-  message,
-  onRetry,
-  onDismiss,
-  title = "Something went wrong",
-}) => {
+const ErrorAlert = ({ message, onRetry, onDismiss, title = 'Something went wrong' }) => {
   return (
     <Alert
       status="error"
@@ -53,7 +48,7 @@ const ErrorAlert = ({
         )}
       </Box>
     </Alert>
-  );
-};
+  )
+}
 
-export default ErrorAlert;
+export default ErrorAlert

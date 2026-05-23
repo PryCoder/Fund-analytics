@@ -1,12 +1,12 @@
 // src/pages/WatchlistPage.jsx
 
-import React from "react";
-import { Link } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
-import { TrendingUp, Trash2, ArrowRight, Bookmark, Eye } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import ErrorAlert from "./ErrorAlert";
+import React from 'react'
+import { Link } from 'react-router-dom'
+import { motion, AnimatePresence } from 'framer-motion'
+import { TrendingUp, Trash2, ArrowRight, Bookmark, Eye } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent } from '@/components/ui/card'
+import ErrorAlert from './ErrorAlert'
 
 // Animation variants
 const containerVariants = {
@@ -18,7 +18,7 @@ const containerVariants = {
       delayChildren: 0.1,
     },
   },
-};
+}
 
 const itemVariants = {
   hidden: { y: 20, opacity: 0 },
@@ -27,7 +27,7 @@ const itemVariants = {
     opacity: 1,
     transition: { duration: 0.4, ease: [0.25, 0.1, 0.25, 1] },
   },
-};
+}
 
 const fadeInUp = {
   hidden: { y: 20, opacity: 0 },
@@ -36,7 +36,7 @@ const fadeInUp = {
     opacity: 1,
     transition: { duration: 0.5, ease: [0.25, 0.1, 0.25, 1] },
   },
-};
+}
 
 const WatchlistPage = ({ items, onRemove, loading, error, onRetry }) => {
   // LOADING STATE
@@ -58,7 +58,7 @@ const WatchlistPage = ({ items, onRemove, loading, error, onRetry }) => {
           </div>
         </div>
       </div>
-    );
+    )
   }
 
   // ERROR STATE
@@ -66,13 +66,13 @@ const WatchlistPage = ({ items, onRemove, loading, error, onRetry }) => {
     return (
       <div className="min-h-screen bg-[#0a0c10]">
         <div className="mx-auto max-w-5xl px-6 py-12">
-          <ErrorAlert
-            title="Unable to load watchlist"
-            message={error}
-            onRetry={onRetry}
-          />
+          <ErrorAlert title="Unable to load watchlist" message={error} onRetry={onRetry} />
           <div className="mt-8 flex justify-center">
-            <Button asChild variant="outline" className="rounded-full border-white/15 bg-transparent text-gray-200 hover:bg-white/5">
+            <Button
+              asChild
+              variant="outline"
+              className="rounded-full border-white/15 bg-transparent text-gray-200 hover:bg-white/5"
+            >
               <Link to="/">
                 <ArrowRight className="mr-2 h-4 w-4" />
                 Back to Dashboard
@@ -81,7 +81,7 @@ const WatchlistPage = ({ items, onRemove, loading, error, onRetry }) => {
           </div>
         </div>
       </div>
-    );
+    )
   }
 
   // EMPTY STATE
@@ -103,9 +103,7 @@ const WatchlistPage = ({ items, onRemove, loading, error, onRetry }) => {
               <Bookmark className="h-7 w-7 text-purple-400" />
             </div>
 
-            <h2 className="text-2xl font-semibold tracking-tight text-white">
-              Watchlist Empty
-            </h2>
+            <h2 className="text-2xl font-semibold tracking-tight text-white">Watchlist Empty</h2>
 
             <p className="mx-auto mt-2 max-w-md text-sm text-gray-500">
               Add mutual funds to your watchlist to track NAV performance and market insights.
@@ -123,7 +121,7 @@ const WatchlistPage = ({ items, onRemove, loading, error, onRetry }) => {
           </motion.div>
         </div>
       </div>
-    );
+    )
   }
 
   return (
@@ -159,12 +157,8 @@ const WatchlistPage = ({ items, onRemove, loading, error, onRetry }) => {
               <Eye className="h-4 w-4 text-purple-400" />
             </div>
             <div>
-              <p className="text-[11px] uppercase tracking-wider text-gray-500">
-                Total Funds
-              </p>
-              <p className="text-2xl font-semibold text-white">
-                {items.length}
-              </p>
+              <p className="text-[11px] uppercase tracking-wider text-gray-500">Total Funds</p>
+              <p className="text-2xl font-semibold text-white">{items.length}</p>
             </div>
           </div>
         </motion.div>
@@ -177,7 +171,7 @@ const WatchlistPage = ({ items, onRemove, loading, error, onRetry }) => {
           className="grid gap-5 md:grid-cols-2 lg:grid-cols-3"
         >
           <AnimatePresence mode="popLayout">
-            {items.map((item, index) => (
+            {items.map((item) => (
               <motion.div
                 key={item.schemeCode}
                 variants={itemVariants}
@@ -210,23 +204,17 @@ const WatchlistPage = ({ items, onRemove, loading, error, onRetry }) => {
                       {/* Details */}
                       <div className="mt-4 space-y-2">
                         <div className="flex items-center justify-between rounded-lg border border-white/5 bg-black/20 px-3 py-2">
-                          <span className="text-xs text-gray-500">
-                            Scheme Code
-                          </span>
-                          <span className="font-mono text-xs text-white">
-                            {item.schemeCode}
-                          </span>
+                          <span className="text-xs text-gray-500">Scheme Code</span>
+                          <span className="font-mono text-xs text-white">{item.schemeCode}</span>
                         </div>
 
                         <div className="flex items-center justify-between rounded-lg border border-white/5 bg-black/20 px-3 py-2">
-                          <span className="text-xs text-gray-500">
-                            Added
-                          </span>
+                          <span className="text-xs text-gray-500">Added</span>
                           <span className="text-xs text-gray-300">
-                            {new Date(item.addedAt).toLocaleDateString("en-IN", {
-                              day: "numeric",
-                              month: "short",
-                              year: "numeric",
+                            {new Date(item.addedAt).toLocaleDateString('en-IN', {
+                              day: 'numeric',
+                              month: 'short',
+                              year: 'numeric',
                             })}
                           </span>
                         </div>
@@ -255,7 +243,7 @@ const WatchlistPage = ({ items, onRemove, loading, error, onRetry }) => {
           >
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <p className="text-xs text-gray-600">
-                {items.length} {items.length === 1 ? "fund" : "funds"} in watchlist
+                {items.length} {items.length === 1 ? 'fund' : 'funds'} in watchlist
               </p>
               <Button
                 asChild
@@ -272,7 +260,7 @@ const WatchlistPage = ({ items, onRemove, loading, error, onRetry }) => {
         )}
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default WatchlistPage;
+export default WatchlistPage

@@ -1,22 +1,12 @@
-import React from "react";
-import { Link as RouterLink, useLocation } from "react-router-dom";
+import React from 'react'
+import { Link as RouterLink, useLocation } from 'react-router-dom'
 
-import {
-  Badge,
-  Box,
-  Button,
-  Container,
-  Flex,
-  HStack,
-  Icon,
-  Text,
-  VStack,
-} from "@chakra-ui/react";
+import { Badge, Box, Button, Container, Flex, HStack, Icon, Text, VStack } from '@chakra-ui/react'
 
-import { TrendingUp } from "lucide-react";
+import { TrendingUp } from 'lucide-react'
 
 const Navbar = () => {
-  const location = useLocation();
+  const location = useLocation()
 
   return (
     <Box
@@ -32,11 +22,7 @@ const Navbar = () => {
       boxShadow="sm"
     >
       <Container maxW="7xl">
-        <Flex
-          h="72px"
-          align="center"
-          justify="space-between"
-        >
+        <Flex h="72px" align="center" justify="space-between">
           {/* Logo Section */}
           <HStack
             as={RouterLink}
@@ -46,7 +32,7 @@ const Navbar = () => {
             transition="all 0.2s"
             _hover={{
               opacity: 0.9,
-              transform: "translateY(-1px)",
+              transform: 'translateY(-1px)',
             }}
           >
             {/* Icon */}
@@ -65,14 +51,10 @@ const Navbar = () => {
             </Flex>
 
             {/* Text */}
-            <VStack
-              align="start"
-              spacing={0}
-              minW={0}
-            >
+            <VStack align="start" spacing={0} minW={0}>
               <Text
                 fontWeight="800"
-                fontSize={{ base: "md", sm: "lg", md: "xl" }}
+                fontSize={{ base: 'md', sm: 'lg', md: 'xl' }}
                 lineHeight="1"
                 noOfLines={1}
                 color="gray.800"
@@ -81,7 +63,7 @@ const Navbar = () => {
               </Text>
 
               <Badge
-                display={{ base: "none", sm: "inline-flex" }}
+                display={{ base: 'none', sm: 'inline-flex' }}
                 colorScheme="purple"
                 variant="subtle"
                 borderRadius="md"
@@ -101,9 +83,7 @@ const Navbar = () => {
               as={RouterLink}
               to="/"
               size="md"
-              variant={
-                location.pathname === "/" ? "solid" : "ghost"
-              }
+              variant={location.pathname === '/' ? 'solid' : 'ghost'}
               colorScheme="blue"
               borderRadius="xl"
               px={5}
@@ -114,7 +94,7 @@ const Navbar = () => {
         </Flex>
       </Container>
     </Box>
-  );
-};
+  )
+}
 
-export default Navbar;
+export default Navbar

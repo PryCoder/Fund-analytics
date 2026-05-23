@@ -1,13 +1,12 @@
-'use client';;
-import * as React from 'react';
-import { Checkbox as CheckboxPrimitive } from 'radix-ui';
-import { motion } from 'motion/react';
+'use client'
+import * as React from 'react'
+import { Checkbox as CheckboxPrimitive } from 'radix-ui'
+import { motion } from 'motion/react'
 
-import { getStrictContext } from '@/lib/get-strict-context';
-import { useControlledState } from '@/hooks/use-controlled-state';
+import { getStrictContext } from '@/lib/get-strict-context'
+import { useControlledState } from '@/hooks/use-controlled-state'
 
-const [CheckboxProvider, useCheckbox] =
-  getStrictContext('CheckboxContext');
+const [CheckboxProvider, useCheckbox] = getStrictContext('CheckboxContext')
 
 function Checkbox({
   defaultChecked,
@@ -23,7 +22,7 @@ function Checkbox({
     value: checked,
     defaultValue: defaultChecked,
     onChange: onCheckedChange,
-  });
+  })
 
   return (
     <CheckboxProvider value={{ isChecked, setIsChecked }}>
@@ -35,19 +34,21 @@ function Checkbox({
         required={required}
         name={name}
         value={value}
-        asChild>
+        asChild
+      >
         <motion.button
           data-slot="checkbox"
           whileTap={{ scale: 0.95 }}
           whileHover={{ scale: 1.05 }}
-          {...props} />
+          {...props}
+        />
       </CheckboxPrimitive.Root>
     </CheckboxProvider>
-  );
+  )
 }
 
 function CheckboxIndicator(props) {
-  const { isChecked } = useCheckbox();
+  const { isChecked } = useCheckbox()
 
   return (
     <CheckboxPrimitive.Indicator forceMount asChild>
@@ -60,7 +61,8 @@ function CheckboxIndicator(props) {
         stroke="currentColor"
         initial="unchecked"
         animate={isChecked ? 'checked' : 'unchecked'}
-        {...props}>
+        {...props}
+      >
         {isChecked === 'indeterminate' ? (
           <motion.line
             x1="5"
@@ -73,7 +75,8 @@ function CheckboxIndicator(props) {
               pathLength: 1,
               opacity: 1,
               transition: { duration: 0.2 },
-            }} />
+            }}
+          />
         ) : (
           <motion.path
             strokeLinecap="round"
@@ -95,11 +98,12 @@ function CheckboxIndicator(props) {
                   duration: 0.2,
                 },
               },
-            }} />
+            }}
+          />
         )}
       </motion.svg>
     </CheckboxPrimitive.Indicator>
-  );
+  )
 }
 
-export { Checkbox, CheckboxIndicator, useCheckbox };
+export { Checkbox, CheckboxIndicator, useCheckbox }

@@ -1,68 +1,64 @@
 // SearchBarExpandable.jsx - Subtle Professional Version
-import React, { useState, useCallback, useRef, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Search, X } from "lucide-react";
+import React, { useState, useCallback, useRef, useEffect } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { Search, X } from 'lucide-react'
 
-const SearchBarExpandable = ({
-  onSearch,
-  loading,
-  placeholder = "Search mutual funds...",
-}) => {
-  const [query, setQuery] = useState("");
-  const [expanded, setExpanded] = useState(false);
-  const debounceTimerRef = useRef(null);
-  const inputRef = useRef(null);
+const SearchBarExpandable = ({ onSearch, loading, placeholder = 'Search mutual funds...' }) => {
+  const [query, setQuery] = useState('')
+  const [expanded, setExpanded] = useState(false)
+  const debounceTimerRef = useRef(null)
+  const inputRef = useRef(null)
 
   const debouncedSearch = useCallback(
     (searchQuery) => {
-      if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
+      if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current)
       debounceTimerRef.current = setTimeout(() => {
         if (searchQuery.trim().length >= 2) {
-          onSearch(searchQuery);
+          onSearch(searchQuery)
         } else if (searchQuery.length === 0) {
-          onSearch("");
+          onSearch('')
         }
-      }, 400);
+      }, 400)
     },
-    [onSearch]
-  );
+    [onSearch],
+  )
 
   const handleInputChange = (e) => {
-    const value = e.target.value;
-    setQuery(value);
-    debouncedSearch(value);
-  };
+    const value = e.target.value
+    setQuery(value)
+    debouncedSearch(value)
+  }
 
-  const handleExpand = () => {
-    setExpanded(true);
-    setTimeout(() => inputRef.current?.focus(), 100);
-  };
+  const handleExpand = useCallback(() => {
+    setExpanded(true)
+    setTimeout(() => inputRef.current?.focus(), 100)
+  }, [])
 
-  const handleClose = () => {
-    setExpanded(false);
-    setQuery("");
-    onSearch("");
-  };
+  const handleClose = useCallback(() => {
+    setExpanded(false)
+    setQuery('')
+    onSearch('')
+  }, [onSearch])
 
   const handleClear = () => {
-    setQuery("");
-    onSearch("");
-    inputRef.current?.focus();
-  };
+    setQuery('')
+    onSearch('')
+    inputRef.current?.focus()
+  }
 
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {
-        e.preventDefault();
-        handleExpand();
+        e.preventDefault()
+        handleExpand()
       }
       if (e.key === 'Escape' && expanded) {
-        handleClose();
+        handleClose()
       }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [expanded]);
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [expanded, handleClose, handleExpand])
 
   return (
     <div className="flex justify-center w-full">
@@ -144,7 +140,7 @@ const SearchBarExpandable = ({
         )}
       </AnimatePresence>
     </div>
-  );
-};
+  )
+}
 
-export default SearchBarExpandable;
+export default SearchBarExpandable

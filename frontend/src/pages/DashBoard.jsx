@@ -1,178 +1,132 @@
 // src/pages/Dashboard.jsx
 
-import React, { useState, useEffect, useCallback } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import {
-  Box,
-  Container,
-  Text,
-  HStack,
-  useToast,
-} from "@chakra-ui/react";
-import {
-  Search,
-  TrendingUp,
-  BarChart3,
-  Star,
-  CheckCircle,
-  XCircle,
-} from "lucide-react";
-import SearchBar from "../components/SearchBar";
-import SearchResults from "../components/SearchResults";
-import Watchlist from "../components/WatchList";
-import ErrorAlert from "../components/ErrorAlert";
-import { fundsAPI, watchlistAPI } from "../services/api";
-import { Card, CardContent } from "@/components/ui/card";
+import React, { useState, useEffect, useCallback } from 'react'
+import { Box, Container, Text, HStack, useToast } from '@chakra-ui/react'
+import { Search, TrendingUp, BarChart3, Star, CheckCircle } from 'lucide-react'
+import SearchBar from '../components/SearchBar'
+import SearchResults from '../components/SearchResults'
+import ErrorAlert from '../components/ErrorAlert'
+import { fundsAPI, watchlistAPI } from '../services/api'
+import { Card, CardContent } from '@/components/ui/card'
 
 const Dashboard = () => {
-  const [searchResults, setSearchResults] = useState([]);
-  const [watchlist, setWatchlist] = useState([]);
-  const [loading, setLoading] = useState({ search: false, watchlist: true });
-  const [error, setError] = useState(null);
-  const [lastQuery, setLastQuery] = useState("");
-  const toast = useToast();
+  const [searchResults, setSearchResults] = useState([])
+  const [watchlist, setWatchlist] = useState([])
+  const [loading, setLoading] = useState({ search: false, watchlist: true })
+  const [error, setError] = useState(null)
+  const [lastQuery, setLastQuery] = useState('')
+  const toast = useToast()
+
+  const loadWatchlist = useCallback(async () => {
+    try {
+      setLoading((prev) => ({ ...prev, watchlist: true }))
+      const response = await watchlistAPI.getAll()
+      setWatchlist(response.data.data || [])
+      setError(null)
+    } catch (err) {
+      console.error('Failed to load watchlist:', err)
+      setError(err.message || 'Failed to load watchlist')
+      toast({
+        title: 'Error loading watchlist',
+        description: err.message || 'Failed to load your watchlist',
+        status: 'error',
+        duration: 4000,
+        isClosable: true,
+        position: 'top-right',
+      })
+    } finally {
+      setLoading((prev) => ({ ...prev, watchlist: false }))
+    }
+  }, [toast])
 
   useEffect(() => {
-    loadWatchlist();
-  }, []);
+    loadWatchlist()
+  }, [loadWatchlist])
 
-  const loadWatchlist = async () => {
-    try {
-      setLoading(prev => ({ ...prev, watchlist: true }));
-      const response = await watchlistAPI.getAll();
-      setWatchlist(response.data.data || []);
-      setError(null);
-    } catch (err) {
-      console.error("Failed to load watchlist:", err);
-      setError(err.message || "Failed to load watchlist");
-      toast({
-        title: "Error loading watchlist",
-        description: err.message || "Failed to load your watchlist",
-        status: "error",
-        duration: 4000,
-        isClosable: true,
-        position: "top-right",
-      });
-    } finally {
-      setLoading(prev => ({ ...prev, watchlist: false }));
-    }
-  };
-
-  const handleSearch = useCallback(async (query) => {
-    setLastQuery(query || "");
-    if (!query || query.trim().length < 2) {
-      setSearchResults([]);
-      return;
-    }
-    try {
-      setLoading(prev => ({ ...prev, search: true }));
-      const response = await fundsAPI.search(query);
-      const results = response.data.data || [];
-      setSearchResults(results);
-      setError(null);
-      
-      if (results.length === 0) {
-        toast({
-          title: "No results found",
-          description: `No mutual funds matching "${query}"`,
-          status: "info",
-          duration: 3000,
-          isClosable: true,
-          position: "top-right",
-        });
+  const handleSearch = useCallback(
+    async (query) => {
+      setLastQuery(query || '')
+      if (!query || query.trim().length < 2) {
+        setSearchResults([])
+        return
       }
-    } catch (err) {
-      console.error("Search failed:", err);
-      setError(err.message || "Failed to search funds");
-      setSearchResults([]);
-      toast({
-        title: "Search failed",
-        description: err.message || "Unable to search funds at this time",
-        status: "error",
-        duration: 4000,
-        isClosable: true,
-        position: "top-right",
-      });
-    } finally {
-      setLoading(prev => ({ ...prev, search: false }));
-    }
-  }, [toast]);
+      try {
+        setLoading((prev) => ({ ...prev, search: true }))
+        const response = await fundsAPI.search(query)
+        const results = response.data.data || []
+        setSearchResults(results)
+        setError(null)
+
+        if (results.length === 0) {
+          toast({
+            title: 'No results found',
+            description: `No mutual funds matching "${query}"`,
+            status: 'info',
+            duration: 3000,
+            isClosable: true,
+            position: 'top-right',
+          })
+        }
+      } catch (err) {
+        console.error('Search failed:', err)
+        setError(err.message || 'Failed to search funds')
+        setSearchResults([])
+        toast({
+          title: 'Search failed',
+          description: err.message || 'Unable to search funds at this time',
+          status: 'error',
+          duration: 4000,
+          isClosable: true,
+          position: 'top-right',
+        })
+      } finally {
+        setLoading((prev) => ({ ...prev, search: false }))
+      }
+    },
+    [toast],
+  )
 
   const handleAddToWatchlist = async (scheme) => {
     try {
-      await watchlistAPI.add(scheme.schemeCode, scheme.schemeName);
-      await loadWatchlist();
+      await watchlistAPI.add(scheme.schemeCode, scheme.schemeName)
+      await loadWatchlist()
       toast({
-        title: "Added to watchlist",
+        title: 'Added to watchlist',
         description: `${scheme.schemeName.substring(0, 50)}${scheme.schemeName.length > 50 ? '...' : ''}`,
-        status: "success",
+        status: 'success',
         duration: 3000,
         isClosable: true,
-        position: "top-right",
+        position: 'top-right',
         icon: <CheckCircle className="h-4 w-4" />,
-      });
+      })
     } catch (err) {
-      console.error("Failed to add to watchlist:", err);
-      setError(err.message || "Failed to add to watchlist");
+      console.error('Failed to add to watchlist:', err)
+      setError(err.message || 'Failed to add to watchlist')
       toast({
-        title: "Failed to add",
-        description: err.message || "Unable to add fund to watchlist",
-        status: "error",
+        title: 'Failed to add',
+        description: err.message || 'Unable to add fund to watchlist',
+        status: 'error',
         duration: 4000,
         isClosable: true,
-        position: "top-right",
-      });
+        position: 'top-right',
+      })
     }
-  };
-
-  const handleRemoveFromWatchlist = async (schemeCode) => {
-    try {
-      const fundName = watchlist.find(f => f.schemeCode === schemeCode)?.schemeName || "Fund";
-      await watchlistAPI.remove(schemeCode);
-      await loadWatchlist();
-      toast({
-        title: "Removed from watchlist",
-        description: `${fundName.substring(0, 50)}${fundName.length > 50 ? '...' : ''}`,
-        status: "info",
-        duration: 3000,
-        isClosable: true,
-        position: "top-right",
-      });
-    } catch (err) {
-      console.error("Failed to remove from watchlist:", err);
-      setError(err.message || "Failed to remove from watchlist");
-      toast({
-        title: "Failed to remove",
-        description: err.message || "Unable to remove fund from watchlist",
-        status: "error",
-        duration: 4000,
-        isClosable: true,
-        position: "top-right",
-      });
-    }
-  };
-
-  // Custom toast component wrapper for success messages
-  const showSuccessToast = (title, description) => {
-    toast({
-      title,
-      description,
-      status: "success",
-      duration: 3000,
-      isClosable: true,
-      position: "top-right",
-    });
-  };
+  }
 
   return (
     <Box minH="100vh" bg="#0a0c10">
       <Container maxW="7xl" py={10}>
-        
         {/* Header - Clean, minimal */}
         <div className="mb-10">
           <div className="flex items-center gap-2 mb-2">
             <div className="w-1 h-6 bg-purple-500 rounded-full" />
-            <Text fontSize="xs" fontWeight="500" letterSpacing="wider" color="purple.400" textTransform="uppercase">
+            <Text
+              fontSize="xs"
+              fontWeight="500"
+              letterSpacing="wider"
+              color="purple.400"
+              textTransform="uppercase"
+            >
               Mutual Fund Analytics
             </Text>
           </div>
@@ -180,7 +134,8 @@ const Dashboard = () => {
             Fund Discovery
           </h1>
           <p className="text-gray-500 text-sm max-w-2xl">
-            Search, track, and analyze Indian mutual funds. Add funds to your watchlist for quick access to NAV performance.
+            Search, track, and analyze Indian mutual funds. Add funds to your watchlist for quick
+            access to NAV performance.
           </p>
         </div>
 
@@ -227,11 +182,9 @@ const Dashboard = () => {
           <CardContent className="p-6">
             <div className="mb-5">
               <h2 className="text-lg font-medium text-white mb-1">Search Funds</h2>
-              <p className="text-sm text-gray-500">
-                Search by fund name or scheme code
-              </p>
+              <p className="text-sm text-gray-500">Search by fund name or scheme code</p>
             </div>
-            
+
             <SearchBar onSearch={handleSearch} loading={loading.search} />
 
             {loading.search && (
@@ -265,15 +218,15 @@ const Dashboard = () => {
                 ) : (
                   <>
                     <p className="text-sm text-gray-500">Search for a fund to get started</p>
-                    <p className="text-xs text-gray-600 mt-1">Try "HDFC", "SBI", "ICICI", or "Axis"</p>
+                    <p className="text-xs text-gray-600 mt-1">
+                      Try "HDFC", "SBI", "ICICI", or "Axis"
+                    </p>
                   </>
                 )}
               </div>
             )}
           </CardContent>
         </Card>
-
-    
 
         {/* Footer */}
         <div className="mt-12 pt-6 border-t border-white/10">
@@ -291,7 +244,7 @@ const Dashboard = () => {
         </div>
       </Container>
     </Box>
-  );
-};
+  )
+}
 
-export default Dashboard;
+export default Dashboard

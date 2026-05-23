@@ -1,26 +1,12 @@
-import React from "react";
+import React from 'react'
 
-import {
-  Box,
-  Flex,
-  Spinner,
-  Text,
-  VStack,
-} from "@chakra-ui/react";
+import { Box, Flex, Spinner, Text, VStack } from '@chakra-ui/react'
 
-import { TrendingUp } from "lucide-react";
+import { TrendingUp } from 'lucide-react'
 
-const LoadingSpinner = ({
-  message = "Loading...",
-}) => {
+const LoadingSpinner = ({ message = 'Loading...' }) => {
   return (
-    <Flex
-      w="full"
-      minH="300px"
-      align="center"
-      justify="center"
-      px={6}
-    >
+    <Flex w="full" minH="300px" align="center" justify="center" px={6}>
       <Box
         position="relative"
         overflow="hidden"
@@ -46,11 +32,7 @@ const LoadingSpinner = ({
           filter="blur(50px)"
         />
 
-        <VStack
-          spacing={6}
-          position="relative"
-          zIndex={1}
-        >
+        <VStack spacing={6} position="relative" zIndex={1}>
           {/* Icon Circle */}
           <Flex
             h="72px"
@@ -78,28 +60,18 @@ const LoadingSpinner = ({
 
           {/* Text */}
           <VStack spacing={2}>
-            <Text
-              fontSize="xl"
-              fontWeight="700"
-              color="gray.800"
-              textAlign="center"
-            >
+            <Text fontSize="xl" fontWeight="700" color="gray.800" textAlign="center">
               Fetching Fund Insights
             </Text>
 
-            <Text
-              fontSize="sm"
-              color="gray.500"
-              textAlign="center"
-              lineHeight="tall"
-            >
+            <Text fontSize="sm" color="gray.500" textAlign="center" lineHeight="tall">
               {message}
             </Text>
           </VStack>
         </VStack>
       </Box>
     </Flex>
-  );
-};
+  )
+}
 
-export default LoadingSpinner;
+export default LoadingSpinner
