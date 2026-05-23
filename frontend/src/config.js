@@ -1,24 +1,17 @@
-const config = {
-  development: {
-    API_URL: 'http://localhost:5000/api',
-  },
+// src/config.js
 
-  production: {
-    API_URL: import.meta.env.VITE_API_BASE_URL,
-  },
-}
+// Use different URLs for development and production
+const getApiBaseUrl = () => {
+  // Production - use your Render backend
+  if (process.env.NODE_ENV === 'production') {
+    return process.env.REACT_APP_API_URL || 'https://fund-analytics-44mj.onrender.com/api';
+  }
+  
+  // Development - local backend
+  return process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+};
 
-// Current environment
-const environment =
-  import.meta.env.MODE || 'development'
+export const API_BASE_URL = getApiBaseUrl();
 
-// Export config
-export const API_CONFIG =
-  config[environment] || config.development
-
-export const API_BASE_URL =
-  API_CONFIG.API_URL
-
-console.log(
-  `🔧 Running in ${environment} mode, API URL: ${API_BASE_URL}`
-)
+// MFAPI direct URLs (no proxy needed)
+export const MFAPI_BASE_URL = 'https://api.mfapi.in/mf';
