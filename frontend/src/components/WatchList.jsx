@@ -1,12 +1,13 @@
 // src/pages/WatchlistPage.jsx
 
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { TrendingUp, Trash2, ArrowRight, Bookmark, Eye } from 'lucide-react'
+import { TrendingUp, Trash2, ArrowRight, Bookmark, Eye, RefreshCw } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
-import ErrorAlert from './ErrorAlert'
+import ErrorAlert from '../components/ErrorAlert'
+import { watchlistAPI } from '../services/api'
 
 // Animation variants
 const containerVariants = {
@@ -38,7 +39,72 @@ const fadeInUp = {
   },
 }
 
-const WatchlistPage = ({ items, onRemove, loading, error, onRetry }) => {
+const WatchlistPage = () => {
+  const [items, setItems] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+  const [refreshing, setRefreshing] = useState(false)
+
+  // Load watchlist on mount
+  useEffect(() => {
+    loadWatchlist()
+  }, [])
+
+  // Optional: Set up polling for real-time updates (every 30 seconds)
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (!refreshing) {
+        refreshWatchlist()
+      }
+    }, 30000) // Refresh every 30 seconds
+
+    return () => clearInterval(interval)
+  }, [refreshing])
+
+  const loadWatchlist = async () => {
+    try {
+      setLoading(true)
+      setError(null)
+      const response = await watchlistAPI.getAll()
+      setItems(response.data.data || [])
+    } catch (err) {
+      console.error('Failed to load watchlist:', err)
+      setError(err.message || 'Failed to load watchlist')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const refreshWatchlist = async () => {
+    try {
+      setRefreshing(true)
+      const response = await watchlistAPI.getAll()
+      setItems(response.data.data || [])
+      setError(null)
+    } catch (err) {
+      console.error('Failed to refresh watchlist:', err)
+    } finally {
+      setRefreshing(false)
+    }
+  }
+
+  const handleRemove = async (schemeCode) => {
+    try {
+      await watchlistAPI.remove(schemeCode)
+      // Update local state immediately for better UX
+      setItems(prevItems => prevItems.filter(item => item.schemeCode !== schemeCode))
+    } catch (err) {
+      console.error('Failed to remove from watchlist:', err)
+      setError(err.message || 'Failed to remove from watchlist')
+      // Reload to ensure consistency
+      loadWatchlist()
+    }
+  }
+
+  const handleRetry = () => {
+    loadWatchlist()
+  }
+
   // LOADING STATE
   if (loading) {
     return (
@@ -66,7 +132,11 @@ const WatchlistPage = ({ items, onRemove, loading, error, onRetry }) => {
     return (
       <div className="min-h-screen bg-[#0a0c10]">
         <div className="mx-auto max-w-5xl px-6 py-12">
-          <ErrorAlert title="Unable to load watchlist" message={error} onRetry={onRetry} />
+          <ErrorAlert 
+            title="Unable to load watchlist" 
+            message={error} 
+            onRetry={handleRetry} 
+          />
           <div className="mt-8 flex justify-center">
             <Button
               asChild
@@ -88,7 +158,6 @@ const WatchlistPage = ({ items, onRemove, loading, error, onRetry }) => {
   if (!items || items.length === 0) {
     return (
       <div className="relative min-h-screen bg-[#0a0c10]">
-        {/* Subtle background glow */}
         <div className="absolute top-1/4 left-1/4 h-80 w-80 rounded-full bg-purple-600/10 blur-3xl" />
         <div className="absolute bottom-1/4 right-1/4 h-80 w-80 rounded-full bg-fuchsia-600/10 blur-3xl" />
 
@@ -126,7 +195,7 @@ const WatchlistPage = ({ items, onRemove, loading, error, onRetry }) => {
 
   return (
     <div className="relative min-h-screen bg-[#0a0c10]">
-      {/* Subtle background gradients - minimal */}
+      {/* Subtle background gradients */}
       <div className="pointer-events-none fixed inset-0 overflow-hidden">
         <div className="absolute -top-40 -right-40 h-80 w-80 rounded-full bg-purple-600/10 blur-3xl" />
         <div className="absolute -bottom-40 -left-40 h-80 w-80 rounded-full bg-blue-600/10 blur-3xl" />
@@ -152,15 +221,30 @@ const WatchlistPage = ({ items, onRemove, loading, error, onRetry }) => {
             </p>
           </div>
 
-          <div className="inline-flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 px-5 py-3">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-purple-500/15">
-              <Eye className="h-4 w-4 text-purple-400" />
-            </div>
-            <div>
-              <p className="text-[11px] uppercase tracking-wider text-gray-500">Total Funds</p>
-              <p className="text-2xl font-semibold text-white">{items.length}</p>
-            </div>
-          </div>
+         <div className="flex items-center gap-3">
+  {/* Refresh Button */}
+  <button
+    onClick={refreshWatchlist}
+    disabled={refreshing}
+    className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/5 px-5 py-3 min-w-[110px] transition-all hover:bg-white/10 disabled:opacity-50"
+  >
+    <RefreshCw className={`h-4 w-4 text-gray-400 ${refreshing ? 'animate-spin' : ''}`} />
+    <span className="text-xs text-gray-400">
+      {refreshing ? 'Updating...' : 'Refresh'}
+    </span>
+  </button>
+
+  {/* Total Funds Card */}
+  <div className="inline-flex items-center justify-center gap-3 rounded-xl border border-white/10 bg-white/5 px-5 py-3 min-w-[140px]">
+    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-purple-500/15">
+      <Eye className="h-4 w-4 text-purple-400" />
+    </div>
+    <div>
+      <p className="text-[11px] uppercase tracking-wider text-gray-500">Total Funds</p>
+      <p className="text-xl font-semibold text-white text-center">{items.length}</p>
+    </div>
+  </div>
+</div>
         </motion.div>
 
         {/* Grid Section */}
@@ -188,7 +272,7 @@ const WatchlistPage = ({ items, onRemove, loading, error, onRetry }) => {
                       </div>
 
                       <button
-                        onClick={() => onRemove(item.schemeCode)}
+                        onClick={() => handleRemove(item.schemeCode)}
                         className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-gray-500 transition-all hover:border-rose-500/30 hover:bg-rose-500/10 hover:text-rose-400"
                       >
                         <Trash2 className="h-3.5 w-3.5" />
@@ -233,7 +317,7 @@ const WatchlistPage = ({ items, onRemove, loading, error, onRetry }) => {
           </AnimatePresence>
         </motion.div>
 
-        {/* Footer Stats - only show if there are items */}
+        {/* Footer Stats */}
         {items.length > 0 && (
           <motion.div
             initial={{ opacity: 0 }}
@@ -243,7 +327,7 @@ const WatchlistPage = ({ items, onRemove, loading, error, onRetry }) => {
           >
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <p className="text-xs text-gray-600">
-                {items.length} {items.length === 1 ? 'fund' : 'funds'} in watchlist
+                Last updated: {new Date().toLocaleTimeString()}
               </p>
               <Button
                 asChild

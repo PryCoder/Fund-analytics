@@ -738,44 +738,44 @@ const FundDetail = () => {
                 </Text>
               </HStack>
             </div>
-            <Grid templateColumns={{ base: 'repeat(2, 1fr)', md: 'repeat(4, 1fr)' }} gap={3}>
-              <MetricChip
-                period="3 Months"
-                numericValue={
-                  performanceMetrics.threeMonthReturn
-                    ? parseFloat(performanceMetrics.threeMonthReturn)
-                    : null
-                }
-                value={performanceMetrics.threeMonthReturn || 'N/A'}
-                isPositive={performanceMetrics.threeMonthReturn > 0}
-              />
-              <MetricChip
-                period="6 Months"
-                numericValue={
-                  performanceMetrics.sixMonthReturn
-                    ? parseFloat(performanceMetrics.sixMonthReturn)
-                    : null
-                }
-                value={performanceMetrics.sixMonthReturn || 'N/A'}
-                isPositive={performanceMetrics.sixMonthReturn > 0}
-              />
-              <MetricChip
-                period="1 Year"
-                numericValue={
-                  performanceMetrics.oneYearReturn
-                    ? parseFloat(performanceMetrics.oneYearReturn)
-                    : null
-                }
-                value={performanceMetrics.oneYearReturn || 'N/A'}
-                isPositive={performanceMetrics.oneYearReturn > 0}
-              />
-              <MetricChip
-                period="Best Day"
-                numericValue={parseFloat(performanceMetrics.bestDay)}
-                value={performanceMetrics.bestDay}
-                isPositive={true}
-              />
-            </Grid>
+           <Grid templateColumns={{ base: 'repeat(2, 1fr)', md: 'repeat(4, 1fr)' }} gap={3}>
+  <MetricChip
+    period="3 Months"
+    numericValue={
+      performanceMetrics.threeMonthReturn
+        ? parseFloat(performanceMetrics.threeMonthReturn)
+        : null
+    }
+    value={performanceMetrics.threeMonthReturn ? `${performanceMetrics.threeMonthReturn}%` : 'N/A'}
+    isPositive={performanceMetrics.threeMonthReturn > 0}
+  />
+  <MetricChip
+    period="6 Months"
+    numericValue={
+      performanceMetrics.sixMonthReturn
+        ? parseFloat(performanceMetrics.sixMonthReturn)
+        : null
+    }
+    value={performanceMetrics.sixMonthReturn ? `${performanceMetrics.sixMonthReturn}%` : 'N/A'}
+    isPositive={performanceMetrics.sixMonthReturn > 0}
+  />
+  <MetricChip
+    period="1 Year"
+    numericValue={
+      performanceMetrics.oneYearReturn
+        ? parseFloat(performanceMetrics.oneYearReturn)
+        : null
+    }
+    value={performanceMetrics.oneYearReturn ? `${performanceMetrics.oneYearReturn}%` : 'N/A'}
+    isPositive={performanceMetrics.oneYearReturn > 0}
+  />
+  <MetricChip
+    period="Best Day"
+    numericValue={parseFloat(performanceMetrics.bestDay)}
+    value={`${performanceMetrics.bestDay}%`}
+    isPositive={true}
+  />
+</Grid>
           </motion.div>
         )}
 
